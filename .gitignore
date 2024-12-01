@@ -1,2 +1,3 @@
 config.yaml
-.csv
+__pycache__
+csv_files
