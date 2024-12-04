@@ -16,13 +16,16 @@ It does not work with 2FA. The login information is saved in plain text in confi
 
 > git --version
 
-> Install Python:
-
 ## Python
 1. Run the downloaded .exe file. In the setup wizard: Check Add Python to PATH before clicking "Install Now." Follow the on-screen instructions.
 2. Verify the installation by running in a terminal:
 
 > python --version
+
+## Get the source code
+Either download it from here as a zip https://github.com/marwy1000/mkmsearch and unzipp it or
+> git clone https://github.com/marwy1000/mkmsearch.git
+> cd mkmsearch
 
 # Example usage
 > python .\mkm.py generate-reports
