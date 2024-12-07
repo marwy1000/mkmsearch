@@ -1,9 +1,19 @@
 # Introduction
-The purpose of this app is to make your MKM purchase orders searchable locally using the command line. It offers one command for generating/requesting the reports in MKM, one for downloading the reports and the main function, search. The app is a bit slow because I am using a slow component that I thought seemed fun to try out. 
+The purpose of this app is to make your MKM purchase orders searchable locally using the command line. These data for the purchase orders can be downloaded either manually or optionally by using this app.  
 
 While this app uses webscraping I believe it still falls within the policy and rules for using the web page. I have added some delay between each commands as to not overload MKM or getting the connection broken. And in the long run it will make search better for everyone. 
 
 It does not work with 2FA. The login information is saved in plain text in config.yaml. 
+
+# Features
+* Search on product name, set name, user name, date of purchase and if its foil. There are preset columns to select between to show more or less information.  
+* Generate reports and download them automatically
+
+# Download reports manually
+* First they need to be generated. Go here: https://www.cardmarket.com/en/Magic/Account/Statistics 
+* Only modify year and date under Purchased Orders, click Export (.csv)
+* Reports can be downloaded manually here: https://www.cardmarket.com/en/Magic/Account/Downloads
+* Place the reports in a sub directory under the scripts, call it "csv_files"
 
 # Windows Installation
 ## Git
