@@ -56,13 +56,12 @@ def generate_reports(
     month: int = typer.Option(None, "-m", "--month", help="In combination with year, limits report generation to this month"),
     current_month: bool = typer.Option(False, "-c", "--current-month", help="Generate report for the current month"),
     previous_month: bool = typer.Option(False, "-p", "--previous-month", help="Generate report for the previous month"),
-    delay: int = typer.Option(10, "--delay", help="Delay in seconds between report requests"),
 ):
     """
-    Generate reports for specified months and years with additional options for date range and delay.
+    Generate reports for specified months and years with additional options for date range.
     """
     from downloads import generate_reports
-    generate_reports(all, year, month, current_month, previous_month, delay)
+    generate_reports(all, year, month, current_month, previous_month)
 
 if __name__ == "__main__":
     app()

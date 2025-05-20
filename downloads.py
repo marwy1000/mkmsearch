@@ -3,6 +3,7 @@ from time import sleep
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import time  # Import the time module for delay
+from utils import request_delay
 
 # Define the directory for CSV files
 CSV_DIR = "csv_files"
@@ -86,11 +87,12 @@ def download_reports(year=None, month=None):
             print(f"Failed to download {filename}")
         
         # Add a 10-second delay after each download
-        time.sleep(10)
+        time.sleep(request_delay())
+  
 
-def generate_reports(all, year, month, current_month, previous_month, delay):
+def generate_reports(all, year, month, current_month, previous_month):
     """
-    Generate reports for specified time with additional options for delay.
+    Generate reports for specified time
     """
     try:
         from login import login
@@ -167,7 +169,7 @@ def generate_reports(all, year, month, current_month, previous_month, delay):
                         print(f"Failed to initiate report for {year_value}-{month_value} (Purchase Date)")
                         continue  # Skip to the next combination if report generation fails
                     
-                    sleep(delay)  # Sleep for the specified delay
+                    sleep(request_delay())  # Sleep for the specified delay
     except Exception as e:
         print(e)          
 

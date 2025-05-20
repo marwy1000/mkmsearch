@@ -1,22 +1,16 @@
 import os
+import time
 from getpass import getpass
 import cloudscraper
 from bs4 import BeautifulSoup
 import oyaml as yaml 
+from utils import request_delay
 
 CONFIG_FILE = 'config.yaml'
 
 
-def random_sleep():
-    import time
-    import random
-
-    time.sleep(random.uniform(3, 8))  # Random delay between 3 and 8 seconds
-    return 0
-
-
 def login():
-    username, password, needs_saving = get_credentials()
+    username, password = get_credentials()
 
     # Create a scraper with a real User-Agent and delay to bypass bot protection
     scraper = cloudscraper.create_scraper(
@@ -63,7 +57,7 @@ def login():
         "__cmtkn": token_value,
         "referalPage": "/en/Magic"
     }
-
+    time.sleep(request_delay())
     response = scraper.post(login_url, data=payload)
 
     if "Logout" in response.text:  
