@@ -1,4 +1,5 @@
 config.yaml
+*.yaml
 __pycache__
 csv_files
 *.spec

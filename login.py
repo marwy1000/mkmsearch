@@ -68,8 +68,6 @@ def login():
 
     if "Logout" in response.text:  
         print("Login successful!")
-        if needs_saving:
-            save_credentials(username, password)
         return scraper
 
     print("Login failed. Check your credentials.")
@@ -86,13 +84,14 @@ def get_credentials():
 
         # Return credentials if found
         if 'username' in config and 'password' in config:
-            return config['username'], config['password'], False  # No need to save back
+            return config['username'], config['password']  # No need to save back
 
     # If config.yaml doesn't exist or is missing credentials, prompt the user
     username = input("Enter username: ")
     password = getpass("Enter password: ")
+    save_credentials(username, password)
 
-    return username, password, True  # Indicate credentials should be saved back
+    return username, password  # Indicate credentials should be saved back
 
 def save_credentials(username, password):
     # Write username and password to config.yaml
