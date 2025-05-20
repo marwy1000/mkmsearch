@@ -6,42 +6,56 @@ import oyaml as yaml
 
 CONFIG_FILE = 'config.yaml'
 
-def login():
 
-    # Prompt user for credentials or get it from the config file
+def random_sleep():
+    import time
+    import random
+
+    time.sleep(random.uniform(3, 8))  # Random delay between 3 and 8 seconds
+    return 0
+
+
+def login():
     username, password, needs_saving = get_credentials()
 
-
-    # Set up the scraper session
-    # scraper = cloudscraper.create_scraper() 
+    # Create a scraper with a real User-Agent and delay to bypass bot protection
     scraper = cloudscraper.create_scraper(
         browser={
             'browser': 'chrome',
             'platform': 'windows',
             'mobile': False
-        }
+        },
+        delay=20  # Helps bypass Cloudflare rate limits
     )
 
-    # Step 1: Get the main page to fetch the dynamic __cmtkn token
+    scraper.request_timeout = 30  # 30 seconds per request
+
+
+    scraper.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36' #'Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Version/15.2 Mobile/15E148 Safari/537.36'
+    })
+
+
+
     main_page_url = "https://www.cardmarket.com/en/Magic"
     main_page_response = scraper.get(main_page_url)
 
-    # Check if the main page loaded correctly
     if main_page_response.status_code != 200:
-        print("Failed to load the main page.")
+        print(f"Failed to load the main page. Status Code: {main_page_response.status_code}")
+        print(f"Response Text (first 500 chars): {main_page_response.text[:500]}")
+        print("Possible causes: Cloudflare protection, IP ban, or incorrect headers.")
         exit(1)
 
-    # Step 2: Parse the HTML to extract the __cmtkn token
     soup = BeautifulSoup(main_page_response.text, "html.parser")
     token_element = soup.find("input", {"name": "__cmtkn"})
 
     if not token_element:
-        print("Failed to retrieve __cmtkn token.")
-        return
+        print("Failed to retrieve __cmtkn token. Dumping first 500 characters of page:")
+        print(main_page_response.text[:500])
+        exit(1)
 
-    # Extract the token value
     token_value = token_element.get("value")
-    # Step 3: Prepare the login POST request
+
     login_url = "https://www.cardmarket.com/en/Magic/PostGetAction/User_Login"
     payload = {
         "username": username,
@@ -50,17 +64,16 @@ def login():
         "referalPage": "/en/Magic"
     }
 
-    # Send the login request
     response = scraper.post(login_url, data=payload)
 
-    # Step 4: Check the login response for success
-    if "Logout" in response.text:  # Adjust based on actual response content
+    if "Logout" in response.text:  
         print("Login successful!")
         if needs_saving:
             save_credentials(username, password)
         return scraper
 
     print("Login failed. Check your credentials.")
+    print(f"Response Text (first 500 chars): {response.text[:500]}")
     exit(1)
 
 
