@@ -24,10 +24,8 @@ def download(
     """
     Downloads all reports that have been generated, doesn't download them again by cheching what has been downloaded. Specify year and month to redownload 1 report.
     """
-    from login import login
     from downloads import download_reports
-    scraper = login()
-    download_reports(scraper, year, month)
+    download_reports(year, month)
 
 from search import set_name_column, product_name_column, quantity_column, total_price_column, date_of_purchase_column
 custom_columns = f"{set_name_column},{product_name_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column}"

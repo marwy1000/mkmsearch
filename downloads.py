@@ -7,15 +7,21 @@ import time  # Import the time module for delay
 # Define the directory for CSV files
 CSV_DIR = "csv_files"
 
-def download_reports(scraper, year=None, month=None):
+def download_reports(year=None, month=None):
     if (year and not month) or (month and not year):
         print('Both year and month needs to be defined at the same time, or left out')
+        exit(1)
+
+    if year is not None and month is not None and is_future_date(year, month):
+        print(f"Skipping future date. Year: {year}. Month: {month}")
         exit(1)
 
     if not os.path.exists(CSV_DIR):
         os.makedirs(CSV_DIR)
 
     # Load the Downloads page
+    from login import login
+    scraper = login()
     downloads_url = "https://www.cardmarket.com/en/Magic/Account/Downloads"
     downloads_page = scraper.get(downloads_url)
     
@@ -141,25 +147,35 @@ def generate_reports(all, year, month, current_month, previous_month, delay):
         # Loop over the specified years and months
         for year_value in years_to_generate:
             for month_value in months_to_generate:
-                payload = {
-                    '__cmtkn': hidden_token,
-                    'idUser': id_user,
-                    'priceForBuyer': price_for_buyer,
-                    'month': month_value,
-                    'year': year_value,
-                    'dateUsed': default_report_type,
-                    'format': 'csv',  # or 'xls' based on preference
-                }
-                
-                # Send a single POST request to initiate the report generation
-                report_response = scraper.post(report_url, data=payload)
-                
-                if report_response.status_code == 200:
-                    print(f"Report generation initiated for {year_value}-{month_value} (Purchase Date)")
-                else:
-                    print(f"Failed to initiate report for {year_value}-{month_value} (Purchase Date)")
-                    continue  # Skip to the next combination if report generation fails
-                
-                sleep(delay)  # Sleep for the specified delay
+                if not is_future_date(year_value, month_value):
+                    payload = {
+                        '__cmtkn': hidden_token,
+                        'idUser': id_user,
+                        'priceForBuyer': price_for_buyer,
+                        'month': month_value,
+                        'year': year_value,
+                        'dateUsed': default_report_type,
+                        'format': 'csv',  # or 'xls' based on preference
+                    }
+                    
+                    # Send a single POST request to initiate the report generation
+                    report_response = scraper.post(report_url, data=payload)
+                    
+                    if report_response.status_code == 200:
+                        print(f"Report generation initiated for {year_value}-{month_value} (Purchase Date)")
+                    else:
+                        print(f"Failed to initiate report for {year_value}-{month_value} (Purchase Date)")
+                        continue  # Skip to the next combination if report generation fails
+                    
+                    sleep(delay)  # Sleep for the specified delay
     except Exception as e:
         print(e)          
+
+def is_future_date(year, month):
+    """
+    Check if the given year and month are in the future.
+    """
+    today = datetime.today()
+    if int(year) > today.year or (int(year) == today.year and int(month) > today.month):
+        return True
+    return False

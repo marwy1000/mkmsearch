@@ -66,8 +66,3 @@ cd dist
 > .\mkm.exe download
 
 > .\mkm.exe search -s "Universes" -p "Rad"
-
-# TODO
-
-Generate reports should not generate reports for dates in the future, ex. -y 2025, should stop at may
-How does handling of several reports for the same month work?
