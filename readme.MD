@@ -11,16 +11,11 @@ It does not work with 2FA. The login information is saved in plain text in confi
 * Search on product name, set name, user name, date of purchase and if its foil. There are preset columns to select between to show more or less information.
 * Generate reports and download them automatically
 
-# Download reports manually
-
-* First they need to be generated. Go here: https://www.cardmarket.com/en/Magic/Account/Statistics
-* Only modify year and date under Purchased Orders, click Export (.csv)
-* Reports can be downloaded manually here: https://www.cardmarket.com/en/Magic/Account/Downloads
-* Place the reports in a sub directory under the scripts, call it "csv_files"
-
 # Windows Installation
 
-## Git
+## Prerequisites
+
+### Git
 
 1. Download the Git installer from git-scm.com.
 2. Run the downloaded .exe file and follow the setup wizard, leave default options unless specific preferences are required. Ensure the option to "Use Git from the command line and also from 3rd-party software" is selected.
@@ -28,7 +23,7 @@ It does not work with 2FA. The login information is saved in plain text in confi
 
 > git --version
 
-## Python
+### Python
 
 1. Download the Python installer from python.org.
 2. Run the downloaded .exe file. In the setup wizard: Check Add Python to PATH before clicking "Install Now." Follow the on-screen instructions.
@@ -44,6 +39,14 @@ Either download it from here as a zip by pressing the green Code button and sele
 
 > cd mkmsearch
 
+## Install Packages
+
+1. Install required packages from the cloned directory
+
+```powershell
+pip install -r requirements.txt
+```
+
 # Usage
 
 ## Build an exe
@@ -51,18 +54,31 @@ Either download it from here as a zip by pressing the green Code button and sele
 From the cloned directory:
 
 ```powershell
-python create_build.py
+python create_build.py 1
 ```
 
 Then verify it and try it out:
 
 ```powershell
-cd dist
+cd mkm
 .\mkm.exe --help
 ```
+
+## Available commands
 
 > .\mkm.exe generate-reports
 
 > .\mkm.exe download
 
 > .\mkm.exe search -s "Universes" -p "Rad"
+
+# Limitations
+If you have 2FA activated or don't want to use your password with this app you can download the reports manually and just use this app for searcing.
+
+## Download reports manually
+
+* First they need to be generated. Go here: https://www.cardmarket.com/en/Magic/Account/Statistics
+* Only modify year and date under Purchased Orders, click Export (.csv)
+* Reports can be downloaded manually here: https://www.cardmarket.com/en/Magic/Account/Downloads
+* Place the reports in a sub directory, call it "csv_files"
+

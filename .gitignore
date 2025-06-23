@@ -1,7 +1,10 @@
-config.yaml
-*.yaml
+build
 __pycache__
 csv_files
-*.spec
 dist
-build
+mkm
+config.yaml
+*.yaml
+*.spec
+AzuriteConfig
+__azurite_db_table__.json
