@@ -5,7 +5,7 @@ from getpass import getpass
 import cloudscraper
 from bs4 import BeautifulSoup
 import oyaml as yaml 
-from utils import request_delay
+from src.utils import request_delay
 
 cookie_file = "cardmarket.cookies"
 config_file = 'config.yaml'

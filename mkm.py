@@ -24,10 +24,10 @@ def download(
     """
     Downloads all reports that have been generated, doesn't download them again by cheching what has been downloaded. Specify year and month to redownload 1 report.
     """
-    from downloads import download_reports
+    from src.downloads import download_reports
     download_reports(year, month)
 
-from search import set_name_column, product_name_column, quantity_column, total_price_column, date_of_purchase_column, quality_column, foiliness_column
+from src.search import set_name_column, product_name_column, quantity_column, total_price_column, date_of_purchase_column, quality_column, foiliness_column
 default_columns = f"{product_name_column},{quantity_column},{quality_column},{foiliness_column}"
 
 display_columns_help = f"Presets: 1-5, where 1 is default. You can also customize what to show. Wrap the column names in \"quotations\". "
@@ -47,7 +47,7 @@ def search(
     """
     Search and format the order details with optional filtering, sorting, grouping, and summarization.
     """
-    from search import search
+    from src.search import search
     search(product_name, set_name, user_name, date_of_purchase, foiliness, sort_by, sort_order, display_columns, limit)
 
 @app.command()
@@ -61,7 +61,7 @@ def generate_reports(
     """
     Generate reports for specified months and years with additional options for date range.
     """
-    from downloads import generate_reports
+    from src.downloads import generate_reports
     generate_reports(all, year, month, current_month, previous_month)
 
 if __name__ == "__main__":

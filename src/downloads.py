@@ -2,7 +2,7 @@ import os
 from time import sleep
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
-from utils import request_delay
+from src.utils import request_delay
 
 # Define the directory for CSV files
 CSV_DIR = "csv_files"
@@ -20,7 +20,7 @@ def download_reports(year=None, month=None):
         os.makedirs(CSV_DIR)
 
     # Load the Downloads page
-    from login import login
+    from src.login import login
     try:
         scraper = login()
     except Exception as e:
@@ -99,7 +99,7 @@ def generate_reports(all, year, month, current_month, previous_month):
     Generate reports for specified time
     """
     try:
-        from login import login
+        from src.login import login
         # Establish a logged-in session
         try:
             scraper = login()
