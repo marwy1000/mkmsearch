@@ -3,7 +3,12 @@ import re
 from datetime import datetime
 import glob
 import pandas as pd
-from rich import print
+from rich import print, box
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
+
 
 # Specify the directory containing the CSV files
 CSV_DIRECTORY = 'csv_files'
@@ -247,31 +252,45 @@ def filter_data(df: pd.DataFrame, columns: list) -> pd.DataFrame:
     return df
 
 def formatted_output(df: pd.DataFrame, limit_message: bool, limit: int, display_columns: str):
-    """Formats and prints the DataFrame with headers and clear formatting."""
-    pd.set_option('display.max_columns', None)
+    console = Console()
 
-
-    TRUNCATE_COLUMNS = {  # Define columns to truncate and their max lengths
+    TRUNCATE_COLUMNS = {
         "Product Name": 35,
         "Set Name": 35,
     }
 
     def truncate_value(value, max_length):
-        """Helper function to truncate values to max_length."""
         if isinstance(value, str) and len(value) > max_length:
-            return value[:max_length - 1] + "-"  # Truncate and append '...'
+            return value[: max_length - 1] + "-"
         return value
 
-    # Apply truncation to the specified columns
+    if df.empty:
+        console.print("[bold red]No results found.[/bold red]")
+        return
+
+    # Apply truncation
+    df = df.copy()
     for column, max_length in TRUNCATE_COLUMNS.items():
         if column in df.columns:
             df[column] = df[column].apply(lambda x: truncate_value(x, max_length))
 
+    table = Table(
+        show_header=True,
+        header_style="bold white",
+        box=box.SIMPLE,
+        show_lines=False,
+    )
 
+    # Add columns with alternating colors
+    for i, col in enumerate(df.columns):
+        style = "white" if i % 2 == 0 else "cyan"
+        table.add_column(col, style=style, overflow="fold")
 
-    if df.empty:
-        print("No results found.")
-    else:
-        print(df.to_string(index=False))
-        if limit_message:
-            print(f"[yellow]Showing the first {limit} results.[/yellow]")
+    # Add rows
+    for _, row in df.iterrows():
+        table.add_row(*[str(v) if v is not None else "" for v in row.values])
+
+    console.print(table)
+
+    if limit_message:
+        console.print(f"[yellow]Showing the first {limit} results.[/yellow]")

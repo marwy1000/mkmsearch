@@ -92,9 +92,7 @@ pylint .\src .\mkm.py
 ```
 
 # TODO
-Emoji print out adds an extra character of padding
 -dc options 1-5 need to make sense, i.e. going from 1 to 5 should give incremental difference
 add version option
-colorize every other column
 running the generate-reports option without any options just logs you in
 Test create_build.py, run black and pylint since its blocked currently
