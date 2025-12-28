@@ -1,10 +1,8 @@
 # Introduction
 
-The purpose of this app is to make your MKM purchase orders searchable locally using the command line. These data for the purchase orders can be downloaded either manually or optionally by using this app.
+The purpose of this app is to make your MKM purchase orders searchable locally using the command line. You can download the purchase orders yourself or automatically, which requires that you login through the app.
 
 While this app uses web scraping I believe it still falls within the policy and rules for using the web page. I have added some delay between each commands as to not overload MKM or getting the connection broken. And in the long run it will make search better for everyone.
-
-It does not work with 2FA. The login information is saved in plain text in config.yaml.
 
 # Features
 
@@ -72,9 +70,6 @@ cd mkm
 
 > .\mkm.exe search -s "Universes" -p "Rad"
 
-# Limitations
-If you have 2FA activated or don't want to use your password with this app you can download the reports manually and just use this app for searcing.
-
 ## Download reports manually
 
 * First they need to be generated. Go here: https://www.cardmarket.com/en/Magic/Account/Statistics
@@ -82,3 +77,22 @@ If you have 2FA activated or don't want to use your password with this app you c
 * Reports can be downloaded manually here: https://www.cardmarket.com/en/Magic/Account/Downloads
 * Place the reports in a sub directory, call it "csv_files"
 
+# Upgrade from previous version
+```
+pip uninstall bs4
+pip install --upgrade -r requirements.txt
+```
+
+# Release process
+Run
+
+```powershell
+black .\src .\mocka.py
+pylint .\src .\mocka.py
+```
+
+# TODO
+Emoji print out adds an extra character of padding
+-dc options 1-5 need to make sense, i.e. going from 1 to 5 should give incremental difference
+add version option
+colorize every other column

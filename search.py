@@ -76,10 +76,16 @@ def get_dataframe():
 
     return final_df
 
+def split_products(s: str):
+    return [
+        p.strip()
+        for p in re.split(r'\s\|\s(?![^()]*\))', s)
+        if p.strip()
+    ]
 
 def parse_products(product_str, currency):
     # Split by " | " to separate individual products
-    products = product_str.split(" | ")
+    products = split_products(product_str)
 
     # Lists to store parsed data
     quantities, product_names, set_names, qualities, languages, foils, prices, total_prices = [], [], [], [], [], [], [], []
@@ -101,6 +107,7 @@ def parse_products(product_str, currency):
         # Extract quantity
         quantity = re.search(quantity_pattern, product)
         quantity_val = int(quantity.group(1)) if quantity else None
+
         quantities.append(quantity_val)
 
         # Extract product name
@@ -109,7 +116,7 @@ def parse_products(product_str, currency):
 
         # Extract set name
         set_name = re.search(set_pattern, product)
-        set_names.append(set_name.group(1).strip() if set_name else None)
+        set_names.append(set_name.group(1).replace("Magic: The Gathering | ", "").strip() if set_name else None)
 
         # Extract quality
         quality = re.search(quality_pattern, product)
@@ -149,15 +156,15 @@ def search(product_name, set_name, user_name, date_of_purchase, foiliness, sort_
         dataframe = get_dataframe()
         columns = []
         match display_columns:
-            case "Limited":
-                display_columns =  f"{product_name_column},{set_name_column},{quantity_column},{quality_column},{foiliness_column}"
-            case "Standard":
+            case "1":
+                display_columns =  f"{product_name_column},{quantity_column},{quality_column},{foiliness_column}"
+            case "2":
                 display_columns =  f"{product_name_column},{set_name_column},{quantity_column},{quality_column},{language_column},{foiliness_column},Price,{date_of_purchase_column}"
-            case "Extended":
+            case "3":
                 display_columns =  f"{product_name_column},{set_name_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column},{user_name_column},{order_id_column}"
-            case "Modern":
+            case "4":
                 display_columns =  f"{set_name_column},{product_name_column},{user_name_column},{order_id_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column}"
-            case "Legacy":
+            case "5":
                display_columns =  f"{user_name_column},{order_id_column},{shipment_cost_column},{total_price_column},Price,{date_of_purchase_column}"
             case _:
                 pass

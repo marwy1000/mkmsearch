@@ -27,9 +27,10 @@ def download(
     from downloads import download_reports
     download_reports(year, month)
 
-from search import set_name_column, product_name_column, quantity_column, total_price_column, date_of_purchase_column
-custom_columns = f"{set_name_column},{product_name_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column}"
-display_columns_help = f"Presets: Limited, Standard, Extended, Modern or Legacy. You can also customize what to show. Wrap the column names in \"quotations\". "
+from search import set_name_column, product_name_column, quantity_column, total_price_column, date_of_purchase_column, quality_column, foiliness_column
+default_columns = f"{product_name_column},{quantity_column},{quality_column},{foiliness_column}"
+
+display_columns_help = f"Presets: 1-5, where 1 is default. You can also customize what to show. Wrap the column names in \"quotations\". "
 date_of_purchase_help= 'The date of purchase as "YYYY-MM-DD". Prefix with ">" or "<" or type "YYYY-MM-DD to YYYY-MM-DD".'
 @app.command()
 def search(
@@ -40,7 +41,7 @@ def search(
     foiliness: bool = typer.Option(False, "-f", "--foil", help="Show only foils."),
     sort_by: str = typer.Option("Product Name", "-sb", "--sort-by", help="Column name to sort by (e.g., 'Product Name', 'Price')."),
     sort_order: bool = typer.Option(False, "-asc", "--ascending", help="Use this option to sort in ascending order."),
-    display_columns: str = typer.Option(custom_columns, "-dc", "--display-columns", help=display_columns_help),
+    display_columns: str = typer.Option(default_columns, "-dc", "--display-columns", help=display_columns_help),
     limit: int = typer.Option(100, "-l", "--limit", help="Limit the number of rows displayed in the results.")
 ):
     """

@@ -1,5 +1,5 @@
 cloudscraper>=1.2.71
-bs4>=0.0.2
+beautifulsoup4>=4.14.3
 oyaml>=1.0.0
-typer>=0.16.0
-pandas>=2.3.0
+typer>=0.21.0
+pandas[performance]>=2.3.3

@@ -21,7 +21,12 @@ def download_reports(year=None, month=None):
 
     # Load the Downloads page
     from login import login
-    scraper = login()
+    try:
+        scraper = login()
+    except Exception as e:
+        print(f"Login failed: {e}")
+        exit(1)
+
     downloads_url = "https://www.cardmarket.com/en/Magic/Account/Downloads"
     downloads_page = scraper.get(downloads_url)
     
@@ -96,8 +101,12 @@ def generate_reports(all, year, month, current_month, previous_month):
     try:
         from login import login
         # Establish a logged-in session
-        scraper = login()
-
+        try:
+            scraper = login()
+        except Exception as e:
+            print(f"Login failed: {e}")
+            exit(1)
+            
         # Access the statistics page to retrieve the hidden token and user information
         stats_url = "https://www.cardmarket.com/en/Magic/Account/Statistics"
         response = scraper.get(stats_url)
