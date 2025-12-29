@@ -1,6 +1,9 @@
 import typer
 from typer.core import TyperGroup
 
+APP_VERSION = "0.3.0"
+
+
 class CustomHelpCommandGroup(TyperGroup):
     def format_help(self, ctx, formatter):
         """
@@ -63,6 +66,21 @@ def generate_reports(
     """
     from src.downloads import generate_reports
     generate_reports(all, year, month, current_month, previous_month)
+
+@app.callback(invoke_without_command=True)
+def main(
+    version: bool = typer.Option(
+        False,
+        "-v",
+        "--version",
+        help="Show application version and exit",
+        is_eager=True,
+    )
+):
+    if version:
+        print(APP_VERSION)
+        exit(0)
+
 
 if __name__ == "__main__":
     app()

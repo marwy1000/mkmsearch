@@ -90,6 +90,15 @@ Run
 black .\src .\mkm.py
 pylint .\src .\mkm.py
 ```
+# Changes
+
+## 0.3.0 / 2025-12-29
+* Updated packages
+* Added versioning
+* Added support for 2FA
+* Improved parsing based on naming change of sets
+* Improved printout of search results
+* Code refactoring
 
 # TODO
 -dc options 1-5 need to make sense, i.e. going from 1 to 5 should give incremental difference
