@@ -94,6 +94,7 @@ pylint .\src .\mkm.py
 ## 0.4.0 / 2026-06-07
 * Changed column option
 * Added summary with visualization options
+* Login fixes, now clears the 2FA cookie if it is stale
 
 ## 0.3.0 / 2025-12-29
 * Updated packages
