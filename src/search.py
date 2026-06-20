@@ -161,15 +161,15 @@ def search(product_name, set_name, user_name, date_of_purchase, foiliness, sort_
         dataframe = get_dataframe()
         columns = []
         match display_columns:
-            case "1":
+            case 1:
                 display_columns =  f"{product_name_column},{quantity_column},{quality_column},{foiliness_column}"
-            case "2":
+            case 2:
                 display_columns =  f"{product_name_column},{set_name_column},{quantity_column},{quality_column},{language_column},{foiliness_column},Price,{date_of_purchase_column}"
-            case "3":
-                display_columns =  f"{product_name_column},{set_name_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column},{user_name_column},{order_id_column}"
-            case "4":
+            case 3:
+                display_columns =  f"{product_name_column},{set_name_column},{quantity_column},Price,{date_of_purchase_column},{user_name_column},{order_id_column}"
+            case 4:
                 display_columns =  f"{set_name_column},{product_name_column},{user_name_column},{order_id_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column}"
-            case "5":
+            case 5:
                display_columns =  f"{user_name_column},{order_id_column},{shipment_cost_column},{total_price_column},Price,{date_of_purchase_column}"
             case _:
                 pass
@@ -294,3 +294,110 @@ def formatted_output(df: pd.DataFrame, limit_message: bool, limit: int, display_
 
     if limit_message:
         console.print(f"[yellow]Showing the first {limit} results.[/yellow]")
+def summary(
+    years: list = None,
+    per_month: bool = False,
+    sort_ascending: bool = True
+):
+    """
+    Purchase analytics summary.
+
+    Args:
+        years (list): list of years to include. Empty/None = all years
+        per_month (bool): if True, aggregates per month instead of per year
+        sort_ascending (bool): sort order for time axis.
+                               True = oldest → newest (default)
+                               False = newest → oldest
+
+    Returns:
+        pd.DataFrame
+    """
+
+    df = get_dataframe()
+
+    if years is None:
+        years = []
+
+    if date_of_purchase_column not in df.columns:
+        raise ValueError("Missing date column")
+
+    df = df.copy()
+
+    # ----------------------------
+    # SAFE DATE PARSING
+    # ----------------------------
+    df[date_of_purchase_column] = pd.to_datetime(
+        df[date_of_purchase_column],
+        errors="coerce"
+    )
+
+    df = df.dropna(subset=[date_of_purchase_column])
+
+    # ----------------------------
+    # YEAR EXTRACTION (STRICT INT)
+    # ----------------------------
+    df["Year"] = df[date_of_purchase_column].dt.year.astype(int)
+
+    # ----------------------------
+    # FILTER YEARS
+    # ----------------------------
+    if years:
+        df = df[df["Year"].isin(years)]
+
+    # ----------------------------
+    # GROUP KEY
+    # ----------------------------
+    if per_month:
+        df["Period"] = df[date_of_purchase_column].dt.to_period("M").astype(str)
+        group_key = "Period"
+    else:
+        group_key = "Year"
+
+    # ----------------------------
+    # AGGREGATION
+    # ----------------------------
+    summary_df = df.groupby(group_key).agg(
+        Orders=(order_id_column, pd.Series.nunique),
+        Cards=(quantity_column, "sum"),
+        Cost=(total_price_column, "sum")
+    ).reset_index()
+
+    # ----------------------------
+    # TYPE SAFETY
+    # ----------------------------
+    if group_key == "Year":
+        summary_df[group_key] = summary_df[group_key].astype(int)
+
+    summary_df["Orders"] = summary_df["Orders"].astype(int)
+    summary_df["Cards"] = summary_df["Cards"].astype(int)
+    summary_df["Cost"] = summary_df["Cost"].astype(float)
+
+    # ----------------------------
+    # SORTING (NEW FEATURE)
+    # ----------------------------
+    summary_df = summary_df.sort_values(
+        by=group_key,
+        ascending=sort_ascending
+    )
+
+    # ----------------------------
+    # OUTPUT TABLE
+    # ----------------------------
+    table = Table(title="Purchase Summary", box=box.SIMPLE)
+
+    table.add_column(group_key, style="white")
+    table.add_column("Orders", style="cyan")
+    table.add_column("Cards", style="magenta")
+    table.add_column("Cost", style="green")
+
+    for _, row in summary_df.iterrows():
+        table.add_row(
+            str(int(row[group_key])) if group_key == "Year" else str(row[group_key]),
+            str(int(row["Orders"])),
+            str(int(row["Cards"])),
+            f"{float(row['Cost']):.2f}"
+        )
+
+    console.print(table)
+
+    return summary_df

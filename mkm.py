@@ -1,7 +1,6 @@
 import typer
 from typer.core import TyperGroup
-
-APP_VERSION = "0.3.0"
+APP_VERSION = "0.4.0"
 
 
 class CustomHelpCommandGroup(TyperGroup):
@@ -25,15 +24,26 @@ def download(
     month: int = typer.Option(None, "-m", "--month", help="The month of the report to download")
 ):
     """
-    Downloads all reports that have been generated, doesn't download them again by cheching what has been downloaded. Specify year and month to redownload 1 report.
+    Downloads all reports from CM that have been generated, doesn't download them again by checking what has been downloaded. Specify year and month to redownload 1 report.
     """
     from src.downloads import download_reports
     download_reports(year, month)
 
-from src.search import set_name_column, product_name_column, quantity_column, total_price_column, date_of_purchase_column, quality_column, foiliness_column
-default_columns = f"{product_name_column},{quantity_column},{quality_column},{foiliness_column}"
+from src.search import (product_name_column, quantity_column, quality_column, foiliness_column, 
+    set_name_column, language_column, date_of_purchase_column, user_name_column,
+    user_name_column, order_id_column, shipment_cost_column, total_price_column)
 
-display_columns_help = f"Presets: 1-5, where 1 is default. You can also customize what to show. Wrap the column names in \"quotations\". "
+default_columns_1 = f"{product_name_column},{quantity_column},{quality_column},{foiliness_column}"
+default_columns_2 = f"{product_name_column},{set_name_column},{quantity_column},{quality_column},{language_column},{foiliness_column},Price,{date_of_purchase_column}"
+default_columns_3 = f"{product_name_column},{set_name_column},{quantity_column},Price,{date_of_purchase_column},{user_name_column},{order_id_column}"
+default_columns_4 = f"{set_name_column},{product_name_column},{user_name_column},{order_id_column},{quantity_column},{total_price_column},Price,{date_of_purchase_column}"
+default_columns_5 = f"{user_name_column},{order_id_column},{shipment_cost_column},{total_price_column},Price,{date_of_purchase_column}"
+
+display_columns_help_1 = f"The default option for which columns to show. You can also customize what to show. Columns: {default_columns_1}"
+display_columns_help_2 = f"Columns: {default_columns_2}"
+display_columns_help_3 = f"Columns: {default_columns_3}"
+display_columns_help_4 = f"Columns: {default_columns_4}"
+display_columns_help_5 = f"Columns: {default_columns_5}"
 date_of_purchase_help= 'The date of purchase as "YYYY-MM-DD". Prefix with ">" or "<" or type "YYYY-MM-DD to YYYY-MM-DD".'
 @app.command()
 def search(
@@ -44,13 +54,30 @@ def search(
     foiliness: bool = typer.Option(False, "-f", "--foil", help="Show only foils."),
     sort_by: str = typer.Option("Product Name", "-sb", "--sort-by", help="Column name to sort by (e.g., 'Product Name', 'Price')."),
     sort_order: bool = typer.Option(False, "-asc", "--ascending", help="Use this option to sort in ascending order."),
-    display_columns: str = typer.Option(default_columns, "-dc", "--display-columns", help=display_columns_help),
+    default_columns_1: bool = typer.Option(False, "-1", "--1", help=display_columns_help_1),
+    default_columns_2: bool = typer.Option(False, "-2", "--2", help=display_columns_help_2),
+    default_columns_3: bool = typer.Option(False, "-3", "--3", help=display_columns_help_3),
+    default_columns_4: bool = typer.Option(False, "-4", "--4", help=display_columns_help_4),
+    default_columns_5: bool = typer.Option(False, "-5", "--5", help=display_columns_help_5),
     limit: int = typer.Option(100, "-l", "--limit", help="Limit the number of rows displayed in the results.")
 ):
     """
     Search and format the order details with optional filtering, sorting, grouping, and summarization.
     """
     from src.search import search
+    if (default_columns_1):
+        display_columns = 1
+    elif (default_columns_2):
+        display_columns = 2
+    elif (default_columns_3):
+        display_columns = 3
+    elif (default_columns_4):
+        display_columns = 4
+    elif (default_columns_5):
+        display_columns = 5
+    else:
+        display_columns = 1
+
     search(product_name, set_name, user_name, date_of_purchase, foiliness, sort_by, sort_order, display_columns, limit)
 
 @app.command()
@@ -62,10 +89,47 @@ def generate_reports(
     previous_month: bool = typer.Option(False, "-p", "--previous-month", help="Generate report for the previous month"),
 ):
     """
-    Generate reports for specified months and years with additional options for date range.
+    Generate reports on CM for specified months and years with additional options for date range.
     """
     from src.downloads import generate_reports
     generate_reports(all, year, month, current_month, previous_month)
+
+@app.command()
+def summary(
+    year: list[int] = typer.Option(
+        None,
+        "--year",
+        "-y",
+        help="Filter by year. Can be used multiple times: -y 2023 -y 2024",
+    ),
+    per_month: bool = typer.Option(
+        False,
+        "--per-month",
+        "-m",
+        help="Group results per month instead of per year",
+    ),
+    graph: bool = typer.Option(
+        False,
+        "--graph",
+        "-g",
+        help="Show graphical output"
+    ),
+):
+    """
+    A summary report of the downloaded purchase orders.
+    """
+
+    from src.search import summary
+
+    year = year if year else []
+
+    df = summary(year, per_month=per_month)
+
+    if graph:
+        from src.visualization import plot_summary
+        print("\nGenerating plot...")
+        plot_summary(df, per_month)
+
 
 @app.callback(invoke_without_command=True)
 def main(

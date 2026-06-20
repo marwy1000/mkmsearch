@@ -1,13 +1,12 @@
 # Introduction
-
-The purpose of this app is to make your MKM purchase orders searchable locally using the command line. You can download the purchase orders yourself or automatically, which requires that you login through the app.
+The purpose of this app is to make your Cardmarket (CM/MKM) purchase orders searchable locally using the command line. You can download the purchase orders yourself or automatically, which requires that you login through the app.
 
 While this app uses web scraping I believe it still falls within the policy and rules for using the web page. I have added some delay between each commands as to not overload MKM or getting the connection broken. And in the long run it will make search better for everyone.
 
 # Features
-
-* Search on product name, set name, user name, date of purchase and if its foil. There are preset columns to select between to show more or less information.
-* Generate reports and download them automatically
+* Generate Cardmarket reports and download them automatically
+* Search downloaded reports by product name, set name, user name, date of purchase and if its foil. There are preset columns to select between to show more or less information.
+* Generate a summary report of all purchases with visualization
 
 # Windows Installation
 
@@ -92,6 +91,10 @@ pylint .\src .\mkm.py
 ```
 # Changes
 
+## 0.4.0 / 2026-06-07
+* Changed column option
+* Added summary with visualization options
+
 ## 0.3.0 / 2025-12-29
 * Updated packages
 * Added versioning
@@ -102,6 +105,5 @@ pylint .\src .\mkm.py
 
 # TODO
 -dc options 1-5 need to make sense, i.e. going from 1 to 5 should give incremental difference
-add version option
 running the generate-reports option without any options just logs you in
 Test create_build.py, run black and pylint since its blocked currently
