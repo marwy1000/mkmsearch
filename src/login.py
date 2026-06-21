@@ -100,7 +100,7 @@ def login(force=False):
 
     # NORMAL LOGIN VALIDATION
     if not validate_session(scraper):
-        raise RuntimeError("Login failed — session not established")
+        raise RuntimeError("Login failed — session not established, check your username and password")
 
     save_cookies(scraper)
     print("Login successful.")
